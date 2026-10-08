@@ -55,17 +55,26 @@ export default function Navbar({ categories = [] }) {
             </span>
           </Link>
 
-          <Link
-            href={isAuthenticated ? "/profile" : "/signin"}
-            aria-label="Profile"
-            className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#05893E]/20 hover:border-[#05893E] transition-all flex items-center justify-center shadow-xs cursor-pointer"
-          >
-            <img
-              src={user?.avatar || DEFAULT_AVATAR}
-              alt={user?.name || DEFAULT_NAME}
-              className="w-full h-full object-cover"
-            />
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              href="/profile"
+              aria-label="Profile"
+              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#05893E]/20 hover:border-[#05893E] transition-all flex items-center justify-center shadow-xs cursor-pointer"
+            >
+              <img
+                src={user?.avatar || DEFAULT_AVATAR}
+                alt={user?.name || DEFAULT_NAME}
+                className="w-full h-full object-cover"
+              />
+            </Link>
+          ) : (
+            <Link
+              href="/signin"
+              className="px-3 py-1.5 rounded-lg bg-[#05893E] hover:bg-[#047F39] text-white text-xs font-semibold shadow-xs transition-colors"
+            >
+              সাইন ইন
+            </Link>
+          )}
         </div>
 
         <div className="hidden sm:flex items-center justify-between h-16 sm:h-18">

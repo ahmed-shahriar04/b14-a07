@@ -26,12 +26,18 @@ const notoBengali = Noto_Sans_Bengali({
 export const metadata = {
   title: "বাজার দর - নিত্যপ্রয়োজনীয় পণ্যের বাজার মূল্য ট্র্যাকার",
   description: "চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম — বাজারভিত্তিক বিস্তারিত, গড়, সর্বনিম্ন-সর্বাধিক এবং দামের পরিবর্তন এক জায়গায়।",
+  icons: {
+    icon: "/logo-icon.png",
+    shortcut: "/logo-icon.png",
+    apple: "/logo-icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="bn" className={`${hindSiliguri.variable} ${inter.variable} ${notoBengali.variable}`}>
       <head>
+        <link rel="icon" href="/logo-icon.png" sizes="any" />
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
