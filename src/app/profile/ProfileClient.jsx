@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth, DEFAULT_AVATAR, DEFAULT_NAME, DEFAULT_EMAIL } from "@/context/AuthContext";
@@ -11,15 +11,40 @@ export default function ProfileClient() {
   const [name, setName] = useState(user?.name || DEFAULT_NAME);
   const [savedMessage, setSavedMessage] = useState(false);
 
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push("/signin?redirect=/profile");
+    }
+  }, [loading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (user?.name) {
+      setName(user.name);
+    }
+  }, [user?.name]);
+
+  if (loading) {
+    return (
+      <div className="w-full max-w-2xl mx-auto py-12 flex flex-col items-center justify-center space-y-3">
+        <div className="w-10 h-10 rounded-full border-2 border-[#05893E] border-t-transparent animate-spin"></div>
+        <p className="text-xs text-[#1D271F]/60">প্রোফাইল লোড হচ্ছে...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
   const currentUser = user || {
     name: DEFAULT_NAME,
     email: DEFAULT_EMAIL,
     avatar: DEFAULT_AVATAR,
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    updateProfile({ name });
+    await updateProfile({ name });
     setSavedMessage(true);
     setTimeout(() => setSavedMessage(false), 3000);
   };
@@ -49,6 +74,7 @@ export default function ProfileClient() {
         </div>
 
         <button
+          type="button"
           onClick={() => {
             signOut();
             router.push("/");
@@ -65,9 +91,12 @@ export default function ProfileClient() {
 
         <form onSubmit={handleUpdate} className="space-y-4">
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-[#1D271F] mb-1.5 sm:mb-2">নাম</label>
+            <label htmlFor="profile-name" className="block text-xs sm:text-sm font-medium text-[#1D271F] mb-1.5 sm:mb-2">নাম</label>
             <input
+              id="profile-name"
+              name="name"
               type="text"
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-3.5 py-2.5 bg-[#FAFCFA] border border-[#D5DDD5] rounded-xl text-xs sm:text-sm focus:outline-none focus:border-[#05893E] text-[#1D271F]"
