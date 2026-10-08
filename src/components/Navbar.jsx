@@ -17,7 +17,7 @@ export default function Navbar({ categories = [] }) {
   useEffect(() => {
     const update = () => setDateStr(getBanglaDate());
     update();
-    const interval = setInterval(update, 1000);
+    const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, []);
 

@@ -16,12 +16,12 @@ const bnDigits = {
 };
 
 export function toBanglaNumber(val) {
-  if (val === null || val === undefined) return "০";
+  if (val === null || val === undefined || val === "") return "০";
   return val.toString().replace(/[0-9]/g, (d) => bnDigits[d] || d);
 }
 
 export function formatBanglaPercentage(val) {
-  if (val === null || val === undefined) return "০.০%";
+  if (val === null || val === undefined || val === "") return "০.০%";
   const num = typeof val === "number" ? val : parseFloat(val);
   if (isNaN(num)) return "০.০%";
   const abs = Math.abs(num);
@@ -30,11 +30,13 @@ export function formatBanglaPercentage(val) {
 }
 
 export function formatBanglaPrice(price) {
-  if (price === null || price === undefined) return "০ টাকা";
-  if (typeof price === "number" && !Number.isInteger(price)) {
-    return `${toBanglaNumber(price.toFixed(2).replace(/\.00$/, ""))} টাকা`;
+  if (price === null || price === undefined || price === "") return "০ টাকা";
+  const num = typeof price === "number" ? price : parseFloat(price);
+  if (isNaN(num)) return "০ টাকা";
+  if (!Number.isInteger(num)) {
+    return `${toBanglaNumber(num.toFixed(2).replace(/\.00$/, ""))} টাকা`;
   }
-  return `${toBanglaNumber(price)} টাকা`;
+  return `${toBanglaNumber(num)} টাকা`;
 }
 
 export function getBanglaUnit(unit) {
