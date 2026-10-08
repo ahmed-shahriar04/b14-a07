@@ -56,16 +56,16 @@ export default function ProductDetailsClient({ product }) {
     );
   }
 
-  const markets = product.markets || [];
+  const markets = Array.isArray(product?.markets) ? product.markets : [];
   
-  const allMins = markets.map((m) => m.min).filter(Boolean);
-  const allMaxs = markets.map((m) => m.max).filter(Boolean);
+  const allMins = markets.map((m) => Number(m.min)).filter((v) => !isNaN(v) && v > 0);
+  const allMaxs = markets.map((m) => Number(m.max)).filter((v) => !isNaN(v) && v > 0);
 
-  const minPrice = allMins.length > 0 ? Math.min(...allMins) : product.today;
-  const maxPrice = allMaxs.length > 0 ? Math.max(...allMaxs) : product.today;
-  const avgPrice = Math.round(
-    markets.reduce((acc, curr) => acc + ((curr.min + curr.max) / 2), 0) / (markets.length || 1)
-  ) || product.today;
+  const minPrice = allMins.length > 0 ? Math.min(...allMins) : (product?.today || 0);
+  const maxPrice = allMaxs.length > 0 ? Math.max(...allMaxs) : (product?.today || 0);
+  const avgPrice = markets.length > 0
+    ? Math.round(markets.reduce((acc, curr) => acc + ((Number(curr.min || 0) + Number(curr.max || 0)) / 2), 0) / markets.length)
+    : (product?.today || 0);
 
   const isUp = product.change?.dir === "up";
   const isDown = product.change?.dir === "down";
@@ -205,18 +205,26 @@ export default function ProductDetailsClient({ product }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E5ECE5]">
-                {markets.map((m, idx) => {
-                  const avg = ((m.min + m.max) / 2);
-                  return (
-                    <tr key={idx} className="hover:bg-[#F3F7F3] transition-colors">
-                      <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-bold text-[#1D271F] whitespace-nowrap">{m.market}</td>
-                      <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-[#1D271F]/70 whitespace-nowrap">{m.division}</td>
-                      <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-medium text-[#1D271F] whitespace-nowrap text-right font-num">{formatBanglaPrice(m.min)}</td>
-                      <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-medium text-[#1D271F] whitespace-nowrap text-right font-num">{formatBanglaPrice(m.max)}</td>
-                      <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-black text-[#1D271F] whitespace-nowrap text-right font-num">{formatBanglaPrice(avg)}</td>
-                    </tr>
-                  );
-                })}
+                {markets.length > 0 ? (
+                  markets.map((m, idx) => {
+                    const avg = ((Number(m.min || 0) + Number(m.max || 0)) / 2);
+                    return (
+                      <tr key={`${m.market || "market"}-${idx}`} className="hover:bg-[#F3F7F3] transition-colors">
+                        <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-bold text-[#1D271F] whitespace-nowrap">{m.market}</td>
+                        <td className="py-2.5 sm:py-3 px-3 sm:px-4 text-[#1D271F]/70 whitespace-nowrap">{m.division}</td>
+                        <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-medium text-[#1D271F] whitespace-nowrap text-right font-num">{formatBanglaPrice(m.min)}</td>
+                        <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-medium text-[#1D271F] whitespace-nowrap text-right font-num">{formatBanglaPrice(m.max)}</td>
+                        <td className="py-2.5 sm:py-3 px-3 sm:px-4 font-black text-[#1D271F] whitespace-nowrap text-right font-num">{formatBanglaPrice(avg)}</td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan="5" className="py-6 text-center text-xs text-[#1D271F]/50">
+                      এই পণ্যের জন্য নির্দিষ্ট বাজারভিত্তিক তালিকা পাওয়া যায়নি।
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
