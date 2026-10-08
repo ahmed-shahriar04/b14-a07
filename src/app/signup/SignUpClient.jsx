@@ -1,23 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
 
 export default function SignUpClient() {
   const router = useRouter();
-  const { signUp, signInWithGoogle, signInWithGithub, loading } = useAuth();
+  const { signUp, signInWithGoogle, signInWithGithub, isAuthenticated, loading } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.push("/");
+    }
+  }, [loading, isAuthenticated, router]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      alert("পাসওয়ার্ড দুটি মিলছে না");
+      toast.error("পাসওয়ার্ড দুটি মিলছে না");
       return;
     }
     const ok = await signUp(name, email, password, "ঢাকা");
@@ -54,11 +61,14 @@ export default function SignUpClient() {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#DCE4DC] shadow-xs space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-[#1D271F] mb-1.5">
+            <label htmlFor="signup-name" className="block text-sm font-bold text-[#1D271F] mb-1.5">
               নাম
             </label>
             <input
+              id="signup-name"
+              name="name"
               type="text"
+              autoComplete="name"
               required
               placeholder="যেমন: রহিম উদ্দিন"
               value={name}
@@ -68,11 +78,14 @@ export default function SignUpClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1D271F] mb-1.5">
+            <label htmlFor="signup-email" className="block text-sm font-bold text-[#1D271F] mb-1.5">
               ইমেইল
             </label>
             <input
+              id="signup-email"
+              name="email"
               type="email"
+              autoComplete="email"
               required
               placeholder="you@example.com"
               value={email}
@@ -82,11 +95,14 @@ export default function SignUpClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1D271F] mb-1.5">
+            <label htmlFor="signup-password" className="block text-sm font-bold text-[#1D271F] mb-1.5">
               পাসওয়ার্ড
             </label>
             <input
+              id="signup-password"
+              name="password"
               type="password"
+              autoComplete="new-password"
               required
               placeholder="কমপক্ষে ৮ অক্ষর"
               value={password}
@@ -96,11 +112,14 @@ export default function SignUpClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1D271F] mb-1.5">
+            <label htmlFor="signup-confirm-password" className="block text-sm font-bold text-[#1D271F] mb-1.5">
               পাসওয়ার্ড নিশ্চিত করুন
             </label>
             <input
+              id="signup-confirm-password"
+              name="confirmPassword"
               type="password"
+              autoComplete="new-password"
               required
               placeholder="আবার লিখুন"
               value={confirmPassword}

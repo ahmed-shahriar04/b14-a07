@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth, DEFAULT_EMAIL } from "@/context/AuthContext";
@@ -10,9 +10,15 @@ export default function SignInClient() {
   const searchParams = useSearchParams();
   const redirectPath = searchParams.get("redirect") || "/";
 
-  const { signIn, signInWithGoogle, signInWithGithub, loading } = useAuth();
+  const { signIn, signInWithGoogle, signInWithGithub, isAuthenticated, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.push(redirectPath);
+    }
+  }, [loading, isAuthenticated, router, redirectPath]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,11 +56,14 @@ export default function SignInClient() {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#DCE4DC] shadow-xs space-y-4">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-bold text-[#1D271F] mb-1.5">
+            <label htmlFor="signin-email" className="block text-sm font-bold text-[#1D271F] mb-1.5">
               ইমেইল
             </label>
             <input
+              id="signin-email"
+              name="email"
               type="email"
+              autoComplete="email"
               required
               placeholder="you@example.com"
               value={email}
@@ -64,11 +73,14 @@ export default function SignInClient() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-[#1D271F] mb-1.5">
+            <label htmlFor="signin-password" className="block text-sm font-bold text-[#1D271F] mb-1.5">
               পাসওয়ার্ড
             </label>
             <input
+              id="signin-password"
+              name="password"
               type="password"
+              autoComplete="current-password"
               required
               placeholder="কমপক্ষে ৮ অক্ষর"
               value={password}
