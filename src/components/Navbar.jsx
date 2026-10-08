@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth, DEFAULT_AVATAR, DEFAULT_NAME, DEFAULT_EMAIL } from "@/context/AuthContext";
 import { getBanglaDate } from "@/lib/banglaUtils";
 
@@ -12,6 +12,7 @@ export default function Navbar({ categories = [] }) {
   const [dateStr, setDateStr] = useState(getBanglaDate());
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const update = () => setDateStr(getBanglaDate());
@@ -22,7 +23,34 @@ export default function Navbar({ categories = [] }) {
 
   useEffect(() => {
     setMobileMenuOpen(false);
+    setUserDropdownOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    if (userDropdownOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [userDropdownOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setUserDropdownOpen(false);
+        setMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <header className="bg-white border-b border-[#E1E8E1] sticky top-0 z-40">
@@ -98,8 +126,9 @@ export default function Navbar({ categories = [] }) {
 
           <div>
             {isAuthenticated ? (
-              <div className="relative">
+              <div className="relative" ref={dropdownRef}>
                 <button
+                  type="button"
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#E1E8E1] hover:border-[#05893E] transition-all bg-white cursor-pointer"
                 >
