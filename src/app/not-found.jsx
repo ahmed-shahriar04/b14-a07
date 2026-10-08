@@ -4,6 +4,11 @@ import PriceTicker from "@/components/PriceTicker";
 import Footer from "@/components/Footer";
 import { getAllProducts, getAllCategories } from "@/lib/api";
 
+export const metadata = {
+  title: "৪০৪ - পৃষ্ঠাটি পাওয়া যায়নি | বাজার দর",
+  description: "আপনি যে পৃষ্ঠাটি খুঁজছেন তা পাওয়া যায়নি।",
+};
+
 export default async function NotFound() {
   const [allCategories, allProducts] = await Promise.all([
     getAllCategories(),

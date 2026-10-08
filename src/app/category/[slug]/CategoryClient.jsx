@@ -36,9 +36,11 @@ export default function CategoryClient({ category, products = [] }) {
 
       <div className="bg-white rounded-2xl border border-[#E1E8E1] p-3 sm:p-4 flex items-center justify-end shadow-xs">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-[#1D271F]/60 font-medium">সাজান</span>
+          <label htmlFor="category-sort" className="text-xs text-[#1D271F]/60 font-medium cursor-pointer">সাজান</label>
           <div className="relative">
             <select
+              id="category-sort"
+              aria-label="সাজান"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="appearance-none bg-[#FAFCFA] border border-[#E1E8E1] rounded-lg px-3.5 py-1.5 pr-7 text-xs font-semibold text-[#1D271F] cursor-pointer focus:outline-none focus:border-[#05893E]"
