@@ -86,5 +86,5 @@ Make sure you have Node.js (v18.18 or later) installed on your system.
 
 ## 🌐 Live Demo & Repository
 
-- **Live Deployment**: 
+- **Live Deployment**: https://bazardor-daily.netlify.app/
 - **GitHub Repository**: https://github.com/ahmed-shahriar04/b14-a07
