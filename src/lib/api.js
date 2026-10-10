@@ -1,26 +1,24 @@
-const PRIMARY_API = "https://api.api-store.workers.dev/api/bazardor";
-const FALLBACK_API = "https://api.abcz.workers.dev/api/bazardor";
+const API_ENDPOINTS = [
+  "https://openapi.programming-hero.com/api/bazardor",
+  "https://api.api-store.workers.dev/api/bazardor",
+  "https://api.abcz.workers.dev/api/bazardor",
+];
 
 async function requestApi(endpoint) {
-  try {
-    const res = await fetch(`${PRIMARY_API}${endpoint}`, {
-      next: { revalidate: 60 },
-      signal: AbortSignal.timeout(6000),
-    });
-    if (!res.ok) throw new Error("Primary failed");
-    return await res.json();
-  } catch {
+  for (const baseUrl of API_ENDPOINTS) {
     try {
-      const res2 = await fetch(`${FALLBACK_API}${endpoint}`, {
+      const res = await fetch(`${baseUrl}${endpoint}`, {
         next: { revalidate: 60 },
         signal: AbortSignal.timeout(6000),
       });
-      if (!res2.ok) throw new Error("Fallback failed");
-      return await res2.json();
+      if (res.ok) {
+        return await res.json();
+      }
     } catch {
-      return null;
+      continue;
     }
   }
+  return null;
 }
 
 export async function getAllProducts() {
