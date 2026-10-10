@@ -3,12 +3,18 @@ const FALLBACK_API = "https://api.abcz.workers.dev/api/bazardor";
 
 async function requestApi(endpoint) {
   try {
-    const res = await fetch(`${PRIMARY_API}${endpoint}`, { next: { revalidate: 60 } });
+    const res = await fetch(`${PRIMARY_API}${endpoint}`, {
+      next: { revalidate: 60 },
+      signal: AbortSignal.timeout(6000),
+    });
     if (!res.ok) throw new Error("Primary failed");
     return await res.json();
   } catch {
     try {
-      const res2 = await fetch(`${FALLBACK_API}${endpoint}`, { next: { revalidate: 60 } });
+      const res2 = await fetch(`${FALLBACK_API}${endpoint}`, {
+        next: { revalidate: 60 },
+        signal: AbortSignal.timeout(6000),
+      });
       if (!res2.ok) throw new Error("Fallback failed");
       return await res2.json();
     } catch {
@@ -28,15 +34,16 @@ export async function getAllCategories() {
 }
 
 export async function getProductsByCategory(slug) {
+  if (!slug) return [];
   const data = await requestApi(`/products?category=${encodeURIComponent(slug)}`);
   if (Array.isArray(data) && data.length > 0) return data;
   
   const all = await getAllProducts();
-  return all.filter((item) => item.category?.toLowerCase() === slug?.toLowerCase());
+  return all.filter((item) => item?.category?.toLowerCase() === slug.toLowerCase());
 }
 
 export async function getProductBySlug(slug) {
   if (!slug) return null;
   const all = await getAllProducts();
-  return all.find((item) => item.slug === slug || String(item.id) === String(slug)) || null;
+  return all.find((item) => item?.slug === slug || String(item?.id) === String(slug)) || null;
 }
